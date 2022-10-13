@@ -24,14 +24,7 @@ using namespace glm;
 #include "texture.h"
 #include "control.h"
 
-//-------------------- CLASS --------------------\\
-
-class Particle
-{
-
-};
-
-//-------------------- MAIN CODE --------------------\\
+//-------------------- STRUCTURE --------------------\\
 
 // CPU representation of a particle
 struct Particle {
@@ -47,6 +40,9 @@ struct Particle {
 	}
 };
 
+//-------------------- MAIN CODE --------------------\\
+
+GLFWwindow* window;
 const int MaxParticles = 10000;
 Particle ParticlesContainer[MaxParticles];
 int LastUsedParticle = 0;
@@ -106,7 +102,6 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	GLFWwindow* window;
 	window = glfwCreateWindow(1200, 800, "Physics Engine 1 - Laurel, Ogawa, Urrutia", NULL, NULL);
 	if (window == NULL) {
 		fprintf(stderr, "Failed to load window! \n");
