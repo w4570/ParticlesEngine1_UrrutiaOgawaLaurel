@@ -43,7 +43,7 @@ struct Particle {
 //-------------------- MAIN CODE --------------------\\
 
 GLFWwindow* window;
-const int MaxParticles = 10000;
+const int MaxParticles = 1;
 Particle ParticlesContainer[MaxParticles];
 int LastUsedParticle = 0;
 bool forceBool = false, gravityBool = false, renderBool = true;
@@ -221,39 +221,48 @@ int main() {
 		if (newparticles > (int)(0.016f * 1000.0))
 			newparticles = (int)(0.016f * 1000.0);
 
-		for (int i = 0; i < newparticles; i++) {
-			int particleIndex = FindUnusedParticle();
-			if (renderBool == true) {
-				ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds.
+		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+		if (state == GLFW_PRESS)
+		{
+			for (int i = 0; i < newparticles; i++) {
+				int particleIndex = FindUnusedParticle();
+				if (renderBool == true) {
+					ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds.
+				}
+				else {
+					ParticlesContainer[particleIndex].life = 0.0f; // This particle will live 0 seconds.
+				}
+				ParticlesContainer[particleIndex].pos = glm::vec3(0, 0, -20.0f);
+
+				float spread = 1.5f;
+				//glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
+				glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
+				// Very bad way to generate a random direction; 
+				// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
+				// combined with some user-controlled parameters (main direction, spread, etc)
+				glm::vec3 randomdir = glm::vec3(
+					(rand() % 2000 - 1000.0f) / 1000.0f,
+					(rand() % 2000 - 1000.0f) / 1000.0f,
+					(rand() % 2000 - 1000.0f) / 1000.0f
+				);
+
+				//ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
+
+				ParticlesContainer[particleIndex].speed = maindir * spread;
+
+				// Color Generation
+				ParticlesContainer[particleIndex].r = 0;
+				ParticlesContainer[particleIndex].g = 0;
+				ParticlesContainer[particleIndex].b = 0;
+				ParticlesContainer[particleIndex].a = 255;
+
+				//ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
+				ParticlesContainer[particleIndex].size = 1.0f;
+
 			}
-			else {
-				ParticlesContainer[particleIndex].life = 0.0f; // This particle will live 0 seconds.
-			}
-			ParticlesContainer[particleIndex].pos = glm::vec3(0, 0, -20.0f);
-
-			float spread = 1.5f;
-			glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
-			// Very bad way to generate a random direction; 
-			// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
-			// combined with some user-controlled parameters (main direction, spread, etc)
-			glm::vec3 randomdir = glm::vec3(
-				(rand() % 2000 - 1000.0f) / 1000.0f,
-				(rand() % 2000 - 1000.0f) / 1000.0f,
-				(rand() % 2000 - 1000.0f) / 1000.0f
-			);
-
-			ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
-
-
-			// Color Generation
-			ParticlesContainer[particleIndex].r = 0;
-			ParticlesContainer[particleIndex].g = 0;
-			ParticlesContainer[particleIndex].b = 0;
-			ParticlesContainer[particleIndex].a = 255;
-
-			ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
-
 		}
+
+		
 
 		glfwSetKeyCallback(window, key_callback);
 
@@ -276,7 +285,6 @@ int main() {
 		int ParticlesCount = 0;
 
 		//if (renderBool == true) {
-
 		for (int i = 0; i < MaxParticles; i++) {
 
 			Particle& p = ParticlesContainer[i]; // shortcut
