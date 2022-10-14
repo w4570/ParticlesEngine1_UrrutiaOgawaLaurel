@@ -43,11 +43,12 @@ struct Particle {
 //-------------------- MAIN CODE --------------------\\
 
 GLFWwindow* window;
-const int MaxParticles = 1;
+const int MaxParticles = 1000;
 Particle ParticlesContainer[MaxParticles];
 int LastUsedParticle = 0;
-bool forceBool = false, gravityBool = false, renderBool = true;
-float force = 0.0f, gravity = 0.0f;
+bool render = false;
+float xF = 0.0f, yF = 0.0f, gravity = 0.0f;
+
 
 // Finds a Particle in ParticlesContainer which isn't used yet.
 // (i.e. life < 0);
@@ -81,6 +82,16 @@ void SortParticles() {
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 
+	switch (key) {
+	case '1':
+		printf("1");
+		break;
+	case '2':
+		printf("2");
+		break;
+	default:
+		printf("Invalid Input");
+	}
 
 }
 
@@ -123,7 +134,6 @@ int main() {
 
 	// Set the mouse at the center of the screen
 	glfwPollEvents();
-	glfwSetCursorPos(window, 1024 / 2, 768 / 2);
 
 	// Setup White Background
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
@@ -158,8 +168,6 @@ int main() {
 		ParticlesContainer[i].cameradistance = -1.0f;
 	}
 
-
-
 	GLuint Texture = loadDDS("particle.DDS");
 
 	// The VBO containing the 4 vertices of the particles.
@@ -190,6 +198,8 @@ int main() {
 	glBufferData(GL_ARRAY_BUFFER, MaxParticles * 4 * sizeof(GLubyte), NULL, GL_STREAM_DRAW);
 
 	double lastTime = glfwGetTime();
+
+	glm::vec3 currentForce = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0) {
 
@@ -222,21 +232,18 @@ int main() {
 			newparticles = (int)(0.016f * 1000.0);
 
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
-		if (state == GLFW_PRESS)
+		if (state == GLFW_PRESS && render == false)
 		{
-			for (int i = 0; i < newparticles; i++) {
+			render = true;
+			//for (int i = 0; i < newparticles; i++) {
 				int particleIndex = FindUnusedParticle();
-				if (renderBool == true) {
-					ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds.
-				}
-				else {
-					ParticlesContainer[particleIndex].life = 0.0f; // This particle will live 0 seconds.
-				}
-				ParticlesContainer[particleIndex].pos = glm::vec3(0, 0, -20.0f);
+				
+				ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds
+				ParticlesContainer[particleIndex].pos = glm::vec3(xF, yF, 0.0f);
 
 				float spread = 1.5f;
 				//glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
-				glm::vec3 maindir = glm::vec3(0.0f, 1.0f, 0.0f);
+				glm::vec3 maindir = glm::vec3(5.0f, 0.0f, 0.0f);
 				// Very bad way to generate a random direction; 
 				// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
 				// combined with some user-controlled parameters (main direction, spread, etc)
@@ -257,28 +264,15 @@ int main() {
 				ParticlesContainer[particleIndex].a = 255;
 
 				//ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
-				ParticlesContainer[particleIndex].size = 1.0f;
+				ParticlesContainer[particleIndex].size = 0.1f;
 
-			}
+			//}
+		} else if(state == GLFW_RELEASE)
+		{
+			render = false;
 		}
-
-		
 
 		glfwSetKeyCallback(window, key_callback);
-
-		if (forceBool == true) {
-			force = 10.0f;
-		}
-		else {
-			force = 0.0f;
-		}
-
-		if (gravityBool == true) {
-			gravity = -9.81f;
-		}
-		else {
-			gravity = -0.0f;
-		}
 
 		// Simulate all particles
 
