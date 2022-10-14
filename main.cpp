@@ -31,7 +31,7 @@ using namespace glm;
 struct Particle {
 	glm::vec3 pos, speed;
 	unsigned char r, g, b, a; // Color
-	float size, angle, weight;
+	float size, angle, drag;
 	float life; // Remaining life of the particle. if <0 : dead and unused.
 	float cameradistance; // *Squared* distance to the camera. if dead : -1.0f
 
@@ -84,7 +84,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	switch (key) {
 		case '1':
-			xF = 8.0f;
+			xF = 12.0f;
 			yF = 0.0f;
 			setLife = 3.0f;
 			gravity = -9.8f;
@@ -96,15 +96,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			gravity = -9.8f;
 			break;
 		case '3':
-			xF = 3.0f;
+			xF = 5.0f;
 			yF = 0.0f;
 			setLife = 3.0f;
 			gravity = 5.0f;
+			break;
 		case '4':
 			xF = 10.0f;
 			yF = 0.0f;
 			setLife = 5.0f;
 			gravity = 0.0f;
+			break;
 		default:
 			printf("Invalid Input");
 	}
@@ -250,7 +252,7 @@ int main() {
 		if (state == GLFW_PRESS && render == false)
 		{
 			render = true;
-			//for (int i = 0; i < newparticles; i++) {
+			//for (int i = 0; i < newparticles; i++) {weight
 			int particleIndex = FindUnusedParticle();
 
 			ParticlesContainer[particleIndex].life = setLife; // This particle will live 5 seconds
@@ -280,6 +282,7 @@ int main() {
 
 			//ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
 			ParticlesContainer[particleIndex].size = 0.2f;
+			ParticlesContainer[particleIndex].drag = gravity;
 
 			//}
 		}
@@ -308,7 +311,7 @@ int main() {
 				p.life -= delta;
 				if (p.life > 0.0f) {
 
-					p.speed += glm::vec3(0.0f, gravity, 0.0f) * (float)delta * 0.5f;
+					p.speed += glm::vec3(0.0f, p.drag, 0.0f) * (float)delta * 0.5f;
 
 					// Simulate simple physics : gravity only, no collisions
 					p.pos += p.speed * (float)delta;
