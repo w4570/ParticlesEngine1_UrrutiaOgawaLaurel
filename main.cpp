@@ -152,18 +152,6 @@ int main() {
 
 #pragma endregion
 
-//#pragma region Mesh Loading
-//
-//	ObjData floorObjData;
-//	LoadObjFile(&floorObjData, "Objects/distanceBox.obj");
-//	GLfloat floorOffsets[] = { 0.0f, 0.0f, 0.0f };
-//	LoadObjToMemory(
-//		&floorObjData,
-//		1.0f,
-//		floorOffsets
-//	);
-//#pragma endregion
-
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
@@ -195,14 +183,6 @@ int main() {
 
 	// fragment shader
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
-
-	//GLuint colorLoc = glGetUniformLocation(programID, "u_color");
-	//glUniform3f(colorLoc, 1.0f, 0.0f, 0.0f);
-
-	//// initialize transform
-	//GLuint transformLoc = glGetUniformLocation(programID, "u_transform");
-	//glm::mat4 trans = glm::mat4(1.0f); // identity
-	//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 #pragma end
 
@@ -267,15 +247,6 @@ int main() {
 
 		glm::vec3 CameraPosition(glm::inverse(ViewMatrix)[3]);
 		glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
-
-
-
-		// Generate 10 new particule each millisecond,
-		// but limit this to 16 ms (60 fps), or if you have 1 long frame (1sec),
-		// newparticles will be huge and the next frame even longer.
-		int newparticles = (int)(delta * 1000.0);
-		if (newparticles > (int)(0.016f * 1000.0))
-			newparticles = (int)(0.016f * 1000.0);
 
 		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
 		if (state == GLFW_PRESS && render == false)
