@@ -18,11 +18,15 @@
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
+//#include <glm/gtc/type_ptr.hpp>
 using namespace glm;
 
-#include "shader.h"
-#include "texture.h"
-#include "control.h"
+#include "Headers/shader.h"
+#include "Headers/texture.h"
+#include "Headers/control.h"
+//#include "Headers/obj_mesh.h"
+//#include "Headers/stb_image.h"
+//#include "Headers/tiny_obj_loader.h"
 
 //-------------------- STRUCTURE --------------------\\
 
@@ -30,7 +34,7 @@ using namespace glm;
 struct Particle {
 	glm::vec3 pos, speed;
 	unsigned char r, g, b, a; // Color
-	float size, angle, weight;
+	float size, angle, drag;
 	float life; // Remaining life of the particle. if <0 : dead and unused.
 	float cameradistance; // *Squared* distance to the camera. if dead : -1.0f
 
@@ -43,11 +47,12 @@ struct Particle {
 //-------------------- MAIN CODE --------------------\\
 
 GLFWwindow* window;
-const int MaxParticles = 10000;
+const int MaxParticles = 15;                                    // Maximum Number of Particles able to appear on screen
 Particle ParticlesContainer[MaxParticles];
-int LastUsedParticle = 0;
-bool forceBool = false, gravityBool = false, renderBool = true;
-float force = 0.0f, gravity = 0.0f;
+int LastUsedParticle = 0;                                        // Number Value of the Last Used Particle onscreen
+bool render = false;                                            // Bool Value that aids controlling rendering of each particle
+float xF = 0.0f, yF = 0.0f, setLife = 1.0f, gravity = 0.0f;        // Store Values for the configuration of bullets and firework physics
+
 
 // Finds a Particle in ParticlesContainer which isn't used yet.
 // (i.e. life < 0);
@@ -80,8 +85,37 @@ void SortParticles() {
 // Desc: 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-
-
+	// switch case for changing projectile type
+	switch (key) {
+		//normal heavy projectile
+	case '1':    // Weak Bullet, Gravity Enabled
+		xF = 10.0f;
+		yF = 0.0f;
+		setLife = 3.0f;
+		gravity = -9.8f;
+		break;
+	case '2': // Cannonball, Gravity Enabled
+		xF = 13.0f;
+		yF = 3.0f;
+		setLife = 2.0f;
+		gravity = -9.8f;
+		break;
+	case '3': // Fireball, Gravity Reversed
+		xF = 5.0f;
+		yF = 0.0f;
+		setLife = 3.0f;
+		gravity = 5.0f;
+		break;
+	case '4':    // Weak Bullet, No Gravity Enabled
+		xF = 10.0f;
+		yF = 0.0f;
+		setLife = 3.0f;
+		gravity = 0.0f;
+		break;
+		default:
+			printf("Invalid Input");
+			break;
+	}
 }
 
 int main() {
@@ -123,7 +157,6 @@ int main() {
 
 	// Set the mouse at the center of the screen
 	glfwPollEvents();
-	glfwSetCursorPos(window, 1024 / 2, 768 / 2);
 
 	// Setup White Background
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
@@ -137,9 +170,11 @@ int main() {
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
+#pragma region Shader Loading
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertex.shader", "fragment.shader");
+	glUseProgram(programID);
 
 	// Vertex shader
 	GLuint CameraRight_worldspace_ID = glGetUniformLocation(programID, "CameraRight_worldspace");
@@ -149,6 +184,7 @@ int main() {
 	// fragment shader
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
 
+#pragma end
 
 	static GLfloat* g_particule_position_size_data = new GLfloat[MaxParticles * 4];
 	static GLubyte* g_particule_color_data = new GLubyte[MaxParticles * 4];
@@ -157,8 +193,6 @@ int main() {
 		ParticlesContainer[i].life = -1.0f;
 		ParticlesContainer[i].cameradistance = -1.0f;
 	}
-
-
 
 	GLuint Texture = loadDDS("particle.DDS");
 
@@ -191,6 +225,8 @@ int main() {
 
 	double lastTime = glfwGetTime();
 
+	glm::vec3 currentForce = glm::vec3(0.0f, 0.0f, 0.0f);
+
 	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) == 0) {
 
 		// Clear the screen
@@ -212,27 +248,16 @@ int main() {
 		glm::vec3 CameraPosition(glm::inverse(ViewMatrix)[3]);
 		glm::mat4 ViewProjectionMatrix = ProjectionMatrix * ViewMatrix;
 
-
-
-		// Generate 10 new particule each millisecond,
-		// but limit this to 16 ms (60 fps), or if you have 1 long frame (1sec),
-		// newparticles will be huge and the next frame even longer.
-		int newparticles = (int)(delta * 1000.0);
-		if (newparticles > (int)(0.016f * 1000.0))
-			newparticles = (int)(0.016f * 1000.0);
-
-		for (int i = 0; i < newparticles; i++) {
+		int state = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT);
+		if (state == GLFW_PRESS && render == false)
+		{
+			render = true;
+			//for (int i = 0; i < newparticles; i++) {weight
 			int particleIndex = FindUnusedParticle();
-			if (renderBool == true) {
-				ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds.
-			}
-			else {
-				ParticlesContainer[particleIndex].life = 0.0f; // This particle will live 0 seconds.
-			}
-			ParticlesContainer[particleIndex].pos = glm::vec3(0, 0, -20.0f);
 
 			float spread = 1.5f;
-			glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
+			//glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
+			glm::vec3 maindir = glm::vec3(xF, yF, 0.0f);
 			// Very bad way to generate a random direction; 
 			// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
 			// combined with some user-controlled parameters (main direction, spread, etc)
@@ -242,8 +267,9 @@ int main() {
 				(rand() % 2000 - 1000.0f) / 1000.0f
 			);
 
-			ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
+			//ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
 
+			ParticlesContainer[particleIndex].speed = maindir * spread;
 
 			// Color Generation
 			ParticlesContainer[particleIndex].r = 0;
@@ -251,32 +277,28 @@ int main() {
 			ParticlesContainer[particleIndex].b = 0;
 			ParticlesContainer[particleIndex].a = 255;
 
-			ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
+			ParticlesContainer[particleIndex].size = 0.2f;
+			ParticlesContainer[particleIndex].drag = gravity;
+			ParticlesContainer[particleIndex].life = setLife;
+			ParticlesContainer[particleIndex].pos = glm::vec3(-25.0f, 0.0f, 0.0f);
 
+			//}
+		}
+		else if (state == GLFW_RELEASE)
+		{
+			render = false;
 		}
 
 		glfwSetKeyCallback(window, key_callback);
 
-		if (forceBool == true) {
-			force = 10.0f;
-		}
-		else {
-			force = 0.0f;
-		}
-
-		if (gravityBool == true) {
-			gravity = -9.81f;
-		}
-		else {
-			gravity = -0.0f;
-		}
-
 		// Simulate all particles
 
 		int ParticlesCount = 0;
+		Particle* newParticle = NULL;
+
+		glfwSetKeyCallback(window, key_callback);
 
 		//if (renderBool == true) {
-
 		for (int i = 0; i < MaxParticles; i++) {
 
 			Particle& p = ParticlesContainer[i]; // shortcut
@@ -287,7 +309,7 @@ int main() {
 				p.life -= delta;
 				if (p.life > 0.0f) {
 
-					p.speed += glm::vec3(0.0f, gravity, 0.0f) * (float)delta * 0.5f;
+					p.speed += glm::vec3(0.0f, p.drag, 0.0f) * (float)delta * 0.5f;
 
 					// Simulate simple physics : gravity only, no collisions
 					p.pos += p.speed * (float)delta;
@@ -317,8 +339,6 @@ int main() {
 			}
 		}
 		//}
-
-		SortParticles();
 
 
 		//printf("%d ",ParticlesCount);
