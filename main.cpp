@@ -88,33 +88,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	// switch case for changing projectile type
 	switch (key) {
 		//normal heavy projectile
-		case '1':
-			xF = 12.0f;
-			yF = 0.0f;
-			setLife = 3.0f;
-			gravity = -9.8f;
-			break;
-			//faster projectile affected by grav
-		case '2':
-			xF = 20.0f;
-			yF = 0.0f;
-			setLife = 3.0f;
-			gravity = -9.8f;
-			break;
-			//fast linear projectile
-		case '3':
-			xF = 5.0f;
-			yF = 0.0f;
-			setLife = 3.0f;
-			gravity = 5.0f;
-			break;
-			//flamethrower type projectile that goes upwards
-		case '4':
-			xF = 10.0f;
-			yF = 0.0f;
-			setLife = 3.0f;
-			gravity = 0.0f;
-			break;
+	case '1':    // Weak Bullet, Gravity Enabled
+		xF = 10.0f;
+		yF = 0.0f;
+		setLife = 3.0f;
+		gravity = -9.8f;
+		break;
+	case '2': // Cannonball, Gravity Enabled
+		xF = 13.0f;
+		yF = 3.0f;
+		setLife = 2.0f;
+		gravity = -9.8f;
+		break;
+	case '3': // Fireball, Gravity Reversed
+		xF = 5.0f;
+		yF = 0.0f;
+		setLife = 3.0f;
+		gravity = 5.0f;
+		break;
+	case '4':    // Weak Bullet, No Gravity Enabled
+		xF = 10.0f;
+		yF = 0.0f;
+		setLife = 3.0f;
+		gravity = 0.0f;
+		break;
 		default:
 			printf("Invalid Input");
 			break;
