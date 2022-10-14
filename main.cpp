@@ -20,9 +20,9 @@
 #include <glm/gtx/norm.hpp>
 using namespace glm;
 
-#include "Headers/shader.h"
-#include "Headers/texture.h"
-#include "Headers/control.h"
+#include "shader.h"
+#include "texture.h"
+#include "control.h"
 
 //-------------------- STRUCTURE --------------------\\
 
@@ -46,7 +46,7 @@ GLFWwindow* window;
 const int MaxParticles = 1000;
 Particle ParticlesContainer[MaxParticles];
 int LastUsedParticle = 0;
-bool render = false;
+bool render = false, is_Firework = false, stop_Fireworks = false;
 float xF = 0.0f, yF = 0.0f, gravity = 0.0f;
 
 
@@ -81,18 +81,85 @@ void SortParticles() {
 // Desc: 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-
-	switch (key) {
-	case '1':
-		printf("1");
-		break;
-	case '2':
-		printf("2");
-		break;
-	default:
-		printf("Invalid Input");
+	switch(key){
+		case 1:
+			xF = 10.0f;
+			yF = 0.0f;
+			is_firework = false;
+			break;
+		case 2:
+			xF = 10.0f
+			yF = 5.0f;
+			is_firework = false;
+			break;
+		case 5:
+			xF = 0.0f;
+			yF = 10.0f;
+			is_firework = true;
+			break;
+		default:
+			xF = 0.0f;
+			yF = 0.0f;
+			is_firework = false;
+			break;
 	}
+}
 
+int generateRandomNumber(int maxRange){
+	srand(time(0));
+	randomN = rand()%maxRange;
+	return randomN;
+}
+void simulateParticles(Particle *p, int Max_Particles, bool stopFireworks){
+	for (int i = 0; i < Max_Particles; i++) {
+
+			p = ParticlesContainer[i]; // shortcut
+			
+			
+			if (p.life > 0.0f) {
+
+				// Decrease life
+				p.life -= delta;
+				if (p.life > 0.0f) {
+					p.speed += glm::vec3(0.0f, gravity, 0.0f) * (float)delta * 0.5f;
+
+					// Simulate simple physics : gravity only, no collisions
+					p.pos += p.speed * (float)delta;
+					p.cameradistance = glm::length2(p.pos - CameraPosition);
+					//ParticlesContainer[i].pos += glm::vec3(0.0f,10.0f, 0.0f) * (float)delta;
+					
+					
+					
+					// Fill the GPU buffer
+					g_particule_position_size_data[4 * ParticlesCount + 0] = p.pos.x;
+					g_particule_position_size_data[4 * ParticlesCount + 1] = p.pos.y;
+					g_particule_position_size_data[4 * ParticlesCount + 2] = p.pos.z;
+
+					g_particule_position_size_data[4 * ParticlesCount + 3] = p.size;
+
+					g_particule_color_data[4 * ParticlesCount + 1] = p.g;
+					g_particule_color_data[4 * ParticlesCount + 0] = p.r;
+					g_particule_color_data[4 * ParticlesCount + 2] = p.b;
+					g_particule_color_data[4 * ParticlesCount + 3] = p.a;
+					
+					
+					if(is_firework == true && stopFireworks == false){
+						int maxParticles_child = generateRandomNumber(15);
+					
+						newParticle = new Particle[maxParticles_child];
+						simulateParticles(&newParticle, maxParticles_child, true);
+					}
+					
+				}
+				else{
+					// Particles that just died will be put at the end of the buffer in SortParticles();
+					p.cameradistance = -1.0f;
+				}
+
+				ParticlesCount++;
+
+			}
+		}
 }
 
 int main() {
@@ -128,19 +195,6 @@ int main() {
 	}
 
 #pragma endregion
-
-//#pragma region Mesh Loading
-//
-//	ObjData backpack;
-//	LoadObjFile(&backpack, "Earth.obj");
-//	GLfloat bunnyOffsets[] = { 0.0f, 0.0f, 0.0f };
-//	LoadObjToMemory(
-//		&backpack,
-//		1.0f,
-//		bunnyOffsets
-//	);
-//
-//#pragma endregion
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -290,18 +344,21 @@ int main() {
 		// Simulate all particles
 
 		int ParticlesCount = 0;
-
+		Particle* newParticle = NULL;
+		
 		//if (renderBool == true) {
-		for (int i = 0; i < MaxParticles; i++) {
+		/*for (int i = 0; i < MaxParticles; i++) {
 
 			Particle& p = ParticlesContainer[i]; // shortcut
-
+			
+			
 			if (p.life > 0.0f) {
 
 				// Decrease life
 				p.life -= delta;
 				if (p.life > 0.0f) {
-
+					
+					newParticle = new Particle[6];
 					p.speed += glm::vec3(0.0f, gravity, 0.0f) * (float)delta * 0.5f;
 
 					// Simulate simple physics : gravity only, no collisions
@@ -330,9 +387,12 @@ int main() {
 				ParticlesCount++;
 
 			}
-		}
+		}*/
+		
 		//}
-
+		
+		Particle& p;
+		simulateParticles(&p, MaxParticles, false);
 		SortParticles();
 
 
