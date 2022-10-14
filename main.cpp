@@ -24,6 +24,7 @@ using namespace glm;
 #include "Headers/texture.h"
 #include "Headers/control.h"
 
+
 //-------------------- STRUCTURE --------------------\\
 
 // CPU representation of a particle
@@ -47,7 +48,7 @@ const int MaxParticles = 1000;
 Particle ParticlesContainer[MaxParticles];
 int LastUsedParticle = 0;
 bool render = false;
-float xF = 0.0f, yF = 0.0f, gravity = 0.0f;
+float xF = 0.0f, yF = 0.0f, setLife = 1.0f, gravity = 0.0f;
 
 
 // Finds a Particle in ParticlesContainer which isn't used yet.
@@ -81,18 +82,32 @@ void SortParticles() {
 // Desc: 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-
 	switch (key) {
-	case '1':
-		printf("1");
-		break;
-	case '2':
-		printf("2");
-		break;
-	default:
-		printf("Invalid Input");
+		case '1':
+			xF = 8.0f;
+			yF = 0.0f;
+			setLife = 3.0f;
+			gravity = -9.8f;
+			break;
+		case '2':
+			xF = 20.0f;
+			yF = 0.0f;
+			setLife = 3.0f;
+			gravity = -9.8f;
+			break;
+		case '3':
+			xF = 3.0f;
+			yF = 0.0f;
+			setLife = 3.0f;
+			gravity = 5.0f;
+		case '4':
+			xF = 10.0f;
+			yF = 0.0f;
+			setLife = 5.0f;
+			gravity = 0.0f;
+		default:
+			printf("Invalid Input");
 	}
-
 }
 
 int main() {
@@ -128,19 +143,6 @@ int main() {
 	}
 
 #pragma endregion
-
-//#pragma region Mesh Loading
-//
-//	ObjData backpack;
-//	LoadObjFile(&backpack, "Earth.obj");
-//	GLfloat bunnyOffsets[] = { 0.0f, 0.0f, 0.0f };
-//	LoadObjToMemory(
-//		&backpack,
-//		1.0f,
-//		bunnyOffsets
-//	);
-//
-//#pragma endregion
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -249,38 +251,39 @@ int main() {
 		{
 			render = true;
 			//for (int i = 0; i < newparticles; i++) {
-				int particleIndex = FindUnusedParticle();
-				
-				ParticlesContainer[particleIndex].life = 5.0f; // This particle will live 5 seconds
-				ParticlesContainer[particleIndex].pos = glm::vec3(xF, yF, 0.0f);
+			int particleIndex = FindUnusedParticle();
 
-				float spread = 1.5f;
-				//glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
-				glm::vec3 maindir = glm::vec3(5.0f, 0.0f, 0.0f);
-				// Very bad way to generate a random direction; 
-				// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
-				// combined with some user-controlled parameters (main direction, spread, etc)
-				glm::vec3 randomdir = glm::vec3(
-					(rand() % 2000 - 1000.0f) / 1000.0f,
-					(rand() % 2000 - 1000.0f) / 1000.0f,
-					(rand() % 2000 - 1000.0f) / 1000.0f
-				);
+			ParticlesContainer[particleIndex].life = setLife; // This particle will live 5 seconds
+			ParticlesContainer[particleIndex].pos = glm::vec3(-15.0f, 0.0f, 0.0f);
 
-				//ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
+			float spread = 1.5f;
+			//glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
+			glm::vec3 maindir = glm::vec3(xF, yF, 0.0f);
+			// Very bad way to generate a random direction; 
+			// See for instance http://stackoverflow.com/questions/5408276/python-uniform-spherical-distribution instead,
+			// combined with some user-controlled parameters (main direction, spread, etc)
+			glm::vec3 randomdir = glm::vec3(
+				(rand() % 2000 - 1000.0f) / 1000.0f,
+				(rand() % 2000 - 1000.0f) / 1000.0f,
+				(rand() % 2000 - 1000.0f) / 1000.0f
+			);
 
-				ParticlesContainer[particleIndex].speed = maindir * spread;
+			//ParticlesContainer[particleIndex].speed = maindir + randomdir * spread;
 
-				// Color Generation
-				ParticlesContainer[particleIndex].r = 0;
-				ParticlesContainer[particleIndex].g = 0;
-				ParticlesContainer[particleIndex].b = 0;
-				ParticlesContainer[particleIndex].a = 255;
+			ParticlesContainer[particleIndex].speed = maindir * spread;
 
-				//ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
-				ParticlesContainer[particleIndex].size = 0.1f;
+			// Color Generation
+			ParticlesContainer[particleIndex].r = 0;
+			ParticlesContainer[particleIndex].g = 0;
+			ParticlesContainer[particleIndex].b = 0;
+			ParticlesContainer[particleIndex].a = 255;
+
+			//ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
+			ParticlesContainer[particleIndex].size = 0.2f;
 
 			//}
-		} else if(state == GLFW_RELEASE)
+		}
+		else if (state == GLFW_RELEASE)
 		{
 			render = false;
 		}
@@ -290,6 +293,9 @@ int main() {
 		// Simulate all particles
 
 		int ParticlesCount = 0;
+		Particle* newParticle = NULL;
+
+		glfwSetKeyCallback(window, key_callback);
 
 		//if (renderBool == true) {
 		for (int i = 0; i < MaxParticles; i++) {
@@ -332,8 +338,6 @@ int main() {
 			}
 		}
 		//}
-
-		SortParticles();
 
 
 		//printf("%d ",ParticlesCount);
