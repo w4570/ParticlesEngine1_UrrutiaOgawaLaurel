@@ -44,7 +44,7 @@ struct Particle {
 //-------------------- MAIN CODE --------------------\\
 
 GLFWwindow* window;
-const int MaxParticles = 1000;
+const int MaxParticles = 15;
 Particle ParticlesContainer[MaxParticles];
 int LastUsedParticle = 0;
 bool render = false;
@@ -109,6 +109,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 			break;
 		default:
 			printf("Invalid Input");
+			break;
 	}
 }
 
@@ -255,9 +256,6 @@ int main() {
 			//for (int i = 0; i < newparticles; i++) {weight
 			int particleIndex = FindUnusedParticle();
 
-			ParticlesContainer[particleIndex].life = setLife; // This particle will live 5 seconds
-			ParticlesContainer[particleIndex].pos = glm::vec3(-25.0f, 0.0f, 0.0f);
-
 			float spread = 1.5f;
 			//glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
 			glm::vec3 maindir = glm::vec3(xF, yF, 0.0f);
@@ -280,9 +278,10 @@ int main() {
 			ParticlesContainer[particleIndex].b = 0;
 			ParticlesContainer[particleIndex].a = 255;
 
-			//ParticlesContainer[particleIndex].size = (rand() % 1000) / 2000.0f + 0.1f;
 			ParticlesContainer[particleIndex].size = 0.2f;
 			ParticlesContainer[particleIndex].drag = gravity;
+			ParticlesContainer[particleIndex].life = setLife;
+			ParticlesContainer[particleIndex].pos = glm::vec3(-25.0f, 0.0f, 0.0f);
 
 			//}
 		}
