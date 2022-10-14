@@ -20,9 +20,9 @@
 #include <glm/gtx/norm.hpp>
 using namespace glm;
 
-#include "shader.h"
-#include "texture.h"
-#include "control.h"
+#include "Headers/shader.h"
+#include "Headers/texture.h"
+#include "Headers/control.h"
 
 //-------------------- STRUCTURE --------------------\\
 
@@ -128,6 +128,19 @@ int main() {
 	}
 
 #pragma endregion
+
+//#pragma region Mesh Loading
+//
+//	ObjData backpack;
+//	LoadObjFile(&backpack, "Earth.obj");
+//	GLfloat bunnyOffsets[] = { 0.0f, 0.0f, 0.0f };
+//	LoadObjToMemory(
+//		&backpack,
+//		1.0f,
+//		bunnyOffsets
+//	);
+//
+//#pragma endregion
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);

@@ -155,9 +155,12 @@
     <None Include="vertex.shader" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="control.h" />
-    <ClInclude Include="shader.h" />
-    <ClInclude Include="texture.h" />
+    <ClInclude Include="Headers\control.h" />
+    <ClInclude Include="Headers\obj_mesh.h" />
+    <ClInclude Include="Headers\shader.h" />
+    <ClInclude Include="Headers\stb_image.h" />
+    <ClInclude Include="Headers\texture.h" />
+    <ClInclude Include="Headers\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="particle.DDS" />
