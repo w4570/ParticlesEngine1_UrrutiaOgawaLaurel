@@ -85,25 +85,30 @@ void SortParticles() {
 // Desc: 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+	// switch case for changing projectile type
 	switch (key) {
+		//normal heavy projectile
 		case '1':
 			xF = 12.0f;
 			yF = 0.0f;
 			setLife = 3.0f;
 			gravity = -9.8f;
 			break;
+			//faster projectile affected by grav
 		case '2':
 			xF = 20.0f;
 			yF = 0.0f;
 			setLife = 3.0f;
 			gravity = -9.8f;
 			break;
+			//fast linear projectile
 		case '3':
 			xF = 5.0f;
 			yF = 0.0f;
 			setLife = 3.0f;
 			gravity = 5.0f;
 			break;
+			//flamethrower type projectile that goes upwards
 		case '4':
 			xF = 10.0f;
 			yF = 0.0f;
