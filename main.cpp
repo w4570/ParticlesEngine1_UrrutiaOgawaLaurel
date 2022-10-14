@@ -104,7 +104,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		case '4':
 			xF = 10.0f;
 			yF = 0.0f;
-			setLife = 5.0f;
+			setLife = 3.0f;
 			gravity = 0.0f;
 			break;
 		default:
@@ -256,7 +256,7 @@ int main() {
 			int particleIndex = FindUnusedParticle();
 
 			ParticlesContainer[particleIndex].life = setLife; // This particle will live 5 seconds
-			ParticlesContainer[particleIndex].pos = glm::vec3(-15.0f, 0.0f, 0.0f);
+			ParticlesContainer[particleIndex].pos = glm::vec3(-25.0f, 0.0f, 0.0f);
 
 			float spread = 1.5f;
 			//glm::vec3 maindir = glm::vec3(0.0f, force, 0.0f);
