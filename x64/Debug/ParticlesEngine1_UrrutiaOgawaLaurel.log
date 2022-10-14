@@ -1,0 +1,10 @@
+﻿  control.cpp
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
+C:\Users\Julian Urrutia\Downloads\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\packages\glfw.3.3.8\build\native\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
+  main.cpp
+C:\Users\Julian Urrutia\Downloads\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\main.cpp(187,9): warning C4068: unknown pragma 'end'
+C:\Users\Julian Urrutia\Downloads\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\main.cpp(309,20): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+  shader.cpp
+  texture.cpp
+  Generating Code...
+  ParticlesEngine1_UrrutiaOgawaLaurel.vcxproj -> C:\Users\Julian Urrutia\Downloads\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\ParticlesEngine1_UrrutiaOgawaLaurel-currentStable_9pm\x64\Debug\ParticlesEngine1_UrrutiaOgawaLaurel.exe
