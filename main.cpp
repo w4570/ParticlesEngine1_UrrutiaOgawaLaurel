@@ -47,11 +47,11 @@ struct Particle {
 //-------------------- MAIN CODE --------------------\\
 
 GLFWwindow* window;
-const int MaxParticles = 15;
+const int MaxParticles = 15;                                    // Maximum Number of Particles able to appear on screen
 Particle ParticlesContainer[MaxParticles];
-int LastUsedParticle = 0;
-bool render = false;
-float xF = 0.0f, yF = 0.0f, setLife = 1.0f, gravity = 0.0f;
+int LastUsedParticle = 0;                                        // Number Value of the Last Used Particle onscreen
+bool render = false;                                            // Bool Value that aids controlling rendering of each particle
+float xF = 0.0f, yF = 0.0f, setLife = 1.0f, gravity = 0.0f;        // Store Values for the configuration of bullets and firework physics
 
 
 // Finds a Particle in ParticlesContainer which isn't used yet.
