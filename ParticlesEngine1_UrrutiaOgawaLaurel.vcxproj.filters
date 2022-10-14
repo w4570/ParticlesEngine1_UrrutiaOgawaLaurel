@@ -34,7 +34,6 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="vertex.shader" />
-    <None Include="Objects\distanceBox.mtl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Headers\tiny_obj_loader.h">
@@ -61,8 +60,5 @@
     <Image Include="Objects\distanceBox.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Objects\distanceBox.obj" />
   </ItemGroup>
 </Project>

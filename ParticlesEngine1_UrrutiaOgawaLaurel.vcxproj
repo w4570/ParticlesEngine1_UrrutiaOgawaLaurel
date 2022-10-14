@@ -151,7 +151,6 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="fragment.shader" />
-    <None Include="Objects\distanceBox.mtl" />
     <None Include="packages.config" />
     <None Include="vertex.shader" />
   </ItemGroup>
@@ -166,9 +165,6 @@
   <ItemGroup>
     <Image Include="Objects\distanceBox.jpg" />
     <Image Include="particle.DDS" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Objects\distanceBox.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

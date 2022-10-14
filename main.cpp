@@ -18,12 +18,15 @@
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
+//#include <glm/gtc/type_ptr.hpp>
 using namespace glm;
 
 #include "Headers/shader.h"
 #include "Headers/texture.h"
 #include "Headers/control.h"
-
+//#include "Headers/obj_mesh.h"
+//#include "Headers/stb_image.h"
+//#include "Headers/tiny_obj_loader.h"
 
 //-------------------- STRUCTURE --------------------\\
 
@@ -147,6 +150,18 @@ int main() {
 
 #pragma endregion
 
+//#pragma region Mesh Loading
+//
+//	ObjData floorObjData;
+//	LoadObjFile(&floorObjData, "Objects/distanceBox.obj");
+//	GLfloat floorOffsets[] = { 0.0f, 0.0f, 0.0f };
+//	LoadObjToMemory(
+//		&floorObjData,
+//		1.0f,
+//		floorOffsets
+//	);
+//#pragma endregion
+
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
@@ -165,9 +180,11 @@ int main() {
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
 
+#pragma region Shader Loading
 
 	// Create and compile our GLSL program from the shaders
 	GLuint programID = LoadShaders("vertex.shader", "fragment.shader");
+	glUseProgram(programID);
 
 	// Vertex shader
 	GLuint CameraRight_worldspace_ID = glGetUniformLocation(programID, "CameraRight_worldspace");
@@ -177,6 +194,15 @@ int main() {
 	// fragment shader
 	GLuint TextureID = glGetUniformLocation(programID, "myTextureSampler");
 
+	//GLuint colorLoc = glGetUniformLocation(programID, "u_color");
+	//glUniform3f(colorLoc, 1.0f, 0.0f, 0.0f);
+
+	//// initialize transform
+	//GLuint transformLoc = glGetUniformLocation(programID, "u_transform");
+	//glm::mat4 trans = glm::mat4(1.0f); // identity
+	//glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+#pragma end
 
 	static GLfloat* g_particule_position_size_data = new GLfloat[MaxParticles * 4];
 	static GLubyte* g_particule_color_data = new GLubyte[MaxParticles * 4];
